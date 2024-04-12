@@ -19,5 +19,5 @@ volumes:
   shared_volume:
 
 networks:
-  app_network:
+  stage_network:
     external: true
