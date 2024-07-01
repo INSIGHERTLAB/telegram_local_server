@@ -3,11 +3,12 @@ services:
     image: aiogram/telegram-bot-api:latest
     restart: always
     environment:
-      - TELEGRAM_API_ID="${TELEGRAM_API_ID}"
-      - TELEGRAM_API_HASH="${TELEGRAM_API_HASH}"
-      - TELEGRAM_LOCAL="${TELEGRAM_LOCAL}"
+      TELEGRAM_API_ID: "${TELEGRAM_API_ID}"
+      TELEGRAM_API_HASH: "${TELEGRAM_API_HASH}"
+      TELEGRAM_LOCAL: "${TELEGRAM_LOCAL}"
+
     volumes:
-      - telegram-bot-api-data:/var/lib/telegram-bot-api
+      - telegram-bot-api-data:/var/lib/telegram-bot-api/
     ports:
       - "8081:8081"
     networks:
@@ -20,8 +21,8 @@ services:
     depends_on:
       - telegram-bot-api
     volumes:
-      - telegram-bot-api-data:/var/lib/telegram-bot-api
-      - ./nginx:/etc/nginx/conf.d/
+      - nginx_server:/var/lib/nginx_server
+      - ../../nginx:/etc/nginx/conf.d/
     ports:
       - "90:80"
     networks:
@@ -29,6 +30,7 @@ services:
 
 volumes:
   telegram-bot-api-data:
+  nginx_server:
 
 networks:
   insighter_worker_stage_new:
