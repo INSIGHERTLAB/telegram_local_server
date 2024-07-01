@@ -68,7 +68,6 @@ jobs:
         - name: Deploy
           run: |
             docker context create prod_context --docker "host=ssh://${{vars.PRODUCTION_SERVER_SSH_ROUTE}}" || true
-            docker --context prod_context compose -f deploy/prod/docker-compose.yml down --rmi all
             docker --context prod_context compose -f deploy/prod/docker-compose.yml up -d --wait --wait-timeout 60
 
     
