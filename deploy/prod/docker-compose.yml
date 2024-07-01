@@ -1,5 +1,5 @@
 services:
-  api:
+  telegram-bot-api:
     image: aiogram/telegram-bot-api:latest
     restart: always
     environment:
@@ -14,11 +14,11 @@ services:
       - insighter_worker_prod_new
 
 
-  nginx:
+  nginx_server:
     image: nginx:1.19-alpine
     restart: always
     depends_on:
-      - api
+      - telegram-bot-api
     volumes:
       - telegram-bot-api-data:/var/lib/telegram-bot-api
       - ./nginx:/etc/nginx/conf.d/
@@ -29,6 +29,8 @@ services:
 
 volumes:
   telegram-bot-api-data:
+
+
 
 networks:
   insighter_worker_prod_new:
