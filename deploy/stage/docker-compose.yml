@@ -23,7 +23,7 @@ services:
       - telegram-bot-api-data:/var/lib/telegram-bot-api
       - ./nginx:/etc/nginx/conf.d/
     ports:
-      - "80:80"
+      - "90:80"
     networks:
       - insighter_worker_stage_new
 
