@@ -6,7 +6,6 @@ on:
       - stage
 jobs:
     cleanup:
-      needs: build
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repository
