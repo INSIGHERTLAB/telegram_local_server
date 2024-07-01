@@ -4,6 +4,50 @@ on:
     branches:
       - main
 jobs:
+    cleanup:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v2
+
+        - name: Set short sha
+          id: set_sha
+          run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+        - name: Load SSH aws key
+          uses: webfactory/ssh-agent@v0.9.0
+          with:
+            ssh-private-key: ${{secrets.PRODUCTION_SERVER_PRIVAT_KEY}}
+
+        - name: Add SSH key to known_hosts
+          run: ssh-keyscan -H "${{vars.PRODUCTION_SERVER_HOST}}" >> ~/.ssh/known_hosts
+
+        - name: Create Docker Context
+          run: docker context create stage_worker_context --docker "host=ssh://${{ vars.PRODUCTION_SERVER_SSH_ROUTE }}" || true
+
+        - name: Check if services exist
+          id: check_services
+          run: |
+            SERVICES_EXIST=$(docker --context stage_worker_context ps -q --filter "name=telegram-bot-api" --filter "name=nginx_server")
+            echo "Services Exist: $SERVICES_EXIST"
+            if [ -n "$SERVICES_EXIST" ]; then
+              echo "true"
+            else
+              echo "false"
+            fi | tee /tmp/services_exist.txt
+            echo "::set-output name=services_exist::$(cat /tmp/services_exist.txt)"
+
+        - name: Cleanup services if they exist
+          if: steps.check_services.outputs.services_exist == 'true'
+          run: |
+            echo "${{ vars.STAGE_ENV_FILE }}" >> ./deploy/stage/.env
+            docker --context stage_worker_context compose -f deploy/stage/docker-compose.yml down
+            docker --context stage_worker_context system prune -af
+            if ! docker --context stage_worker_context network ls --filter name=insighter_worker_stage_new --format '{{.Name}}' | grep -w insighter_worker_stage_new; then
+            docker --context stage_worker_context network create insighter_worker_stage_new
+            fi
+
     deploy_docker:
       runs-on: ubuntu-latest
       steps:
