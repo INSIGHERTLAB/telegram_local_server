@@ -22,7 +22,7 @@ services:
       - telegram-bot-api
     volumes:
       - nginx_server:/var/lib/nginx_server
-      - ../../nginx:/etc/nginx/conf.d/
+      - ./nginx:/etc/nginx/conf.d/
     ports:
       - "90:80"
     networks:
