@@ -57,6 +57,7 @@ jobs:
           with:
             sparse-checkout: |
               deploy/prod/docker-compose.yml
+              deploy/prod/nginx/default.conf
             sparse-checkout-cone-mode: false
         - name: Load SSH aws key
           uses: webfactory/ssh-agent@v0.9.0
