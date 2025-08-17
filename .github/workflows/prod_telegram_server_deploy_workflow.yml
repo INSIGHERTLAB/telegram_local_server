@@ -1,4 +1,4 @@
-name: Insighter deployment
+name: Insighter PROD deployment
 on:
   push:
     branches:
